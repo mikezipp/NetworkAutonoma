@@ -11,28 +11,27 @@ import credentials
 
 # Begin timing the script
 STARTTIME = datetime.now()
-
+ENDTIME = datetime.now()
+TOTALTIME = ENDTIME - STARTTIME
 
 
 # Iterates through a CSV, forms a dict, runs the command and logics it.
 
-def netcon(username, password, secret, CUSTOMER, COMMANDLIST):
+def netcon(username, password, COMMANDLIST):
     with open(CUSTOMER, mode='r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             hostname = row['SysName']
             device_type = row['device_type']
             ipaddr = row['IP_Address']
-            switch = {
+            device = {
                 'device_type': device_type,
                 'ip': ipaddr,
                 'username': username,
                 'password': password,
-                'secret': secret,
-                'verbose': False,
             }
 
-            net_connect = ConnectHandler(**switch)
+            net_connect = ConnectHandler(device)
             net_connect.enable()
             net_connect.send_config_set(COMMANDLIST)
             connect_return = net_connect.send_config_set(COMMANDLIST)
@@ -46,23 +45,21 @@ def netcon(username, password, secret, CUSTOMER, COMMANDLIST):
 COMMANDLIST = []
 
 def main():
-   COMMANDSTRING = input('Enter command to run: ')
+   COMMANDSTRING = input('\nEnter command to run: \n>')
    while COMMANDSTRING is not "":
       COMMANDLIST.append(command)
       print "you entered %s" % COMMANDLIST
       COMMANDTARGET = input('Enter target device ip : ')
       print "you selected %s" % COMMANDTARGET
-      with open(CUSTOMER, mode='r') as csvfile:
+      with open(COMPANY, mode='r') as csvfile:
          reader = csv.DictReader(csvfile)
          if COMMANDTARGET in reader:
-            print "found device, applying config"
-            netcon(username, password, secret, CUSTOMER, COMMANDLIST)
+            print "found device, applying config to %s" % COMMANDTARGET 
+            netcon(username, password, COMPANY, COMMANDLIST)
             ENDTIME = datetime.now()
             print("\nTotal time for script: \n" + str(TOTALTIME))
+main()
 
-
-
-TOTALTIME = ENDTIME - STARTTIME
 
 
 
