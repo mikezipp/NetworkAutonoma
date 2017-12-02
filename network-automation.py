@@ -1,12 +1,12 @@
 '''
 This module is a base for single-thread scripts.
 based on https://github.com/admiralspark/NetSpark-Scripts
+sudo python -m pip install netmiko <- TO INSTALL NETMIKO
 '''
 
 from datetime import datetime
 import csv
 from netmiko import ConnectHandler
-import credentials
 
 
 # Begin timing the script
@@ -14,21 +14,27 @@ STARTTIME = datetime.now()
 ENDTIME = datetime.now()
 TOTALTIME = ENDTIME - STARTTIME
 
+COMMANDLIST = []
+TARGETDEVICES = []
 
 # Iterates through a CSV, forms a dict, runs the command and logics it.
 
-def netcon(username, password, COMMANDLIST):
+def netcon():
     with open(CUSTOMER, mode='r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             hostname = row['SysName']
             device_type = row['device_type']
             ipaddr = row['IP_Address']
+            username = row['username']
+            password = row['password']
             device = {
                 'device_type': device_type,
                 'ip': ipaddr,
                 'username': username,
                 'password': password,
+                'secret': secret,
+                'verbose': False,
             }
 
             net_connect = ConnectHandler(device)
@@ -42,20 +48,21 @@ def netcon(username, password, COMMANDLIST):
             net_connect.disconnect()
 
 
-COMMANDLIST = []
 
 def main():
-   COMMANDSTRING = input('\nEnter command to run: \n>')
-   while COMMANDSTRING is not "":
-      COMMANDLIST.append(command)
+   COMMANDSTRING = raw_input("\nEnter command to run: \n> ")
+   if COMMANDSTRING != "":
+      COMMANDLIST.append(COMMANDSTRING)
       print "you entered %s" % COMMANDLIST
-      COMMANDTARGET = input('Enter target device ip : ')
-      print "you selected %s" % COMMANDTARGET
-      with open(COMPANY, mode='r') as csvfile:
+      COMMANDTARGET = raw_input("\nEnter target device ip: \n> ")
+      TARGETDEVICES.append(COMMANDTARGET)
+      print "you selected %s" % TARGETDEVICES
+
+      with open("company.csv", mode='r') as csvfile:
          reader = csv.DictReader(csvfile)
-         if COMMANDTARGET in reader:
-            print "found device, applying config to %s" % COMMANDTARGET 
-            netcon(username, password, COMPANY, COMMANDLIST)
+         if TARGETDEVICES in reader:
+            print "found device, applying config to %s" % TARGETDEVICES
+#            netcon(username, password, COMPANY, COMMANDLIST)
             ENDTIME = datetime.now()
             print("\nTotal time for script: \n" + str(TOTALTIME))
 main()
