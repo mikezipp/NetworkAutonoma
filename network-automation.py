@@ -19,8 +19,8 @@ TARGETDEVICES = []
 
 # Iterates through a CSV, forms a dict, runs the command and logics it.
 
-def netcon():
-    with open(CUSTOMER, mode='r') as csvfile:
+def initlists():
+    with open("company.csv", mode='r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             hostname = row['SysName']
@@ -28,6 +28,7 @@ def netcon():
             ipaddr = row['IP_Address']
             username = row['username']
             password = row['password']
+            secret = row['secret']
             device = {
                 'device_type': device_type,
                 'ip': ipaddr,
@@ -37,19 +38,9 @@ def netcon():
                 'verbose': False,
             }
 
-            net_connect = ConnectHandler(device)
-            net_connect.enable()
-            net_connect.send_config_set(COMMANDLIST)
-            connect_return = net_connect.send_config_set(COMMANDLIST)
-
-            print("\n\n>>>>>>>>> Device {0} {1} <<<<<<<<<".format(hostname, ipaddr))
-            print(connect_return)
-            print("\n>>>>>>>>> End <<<<<<<<<")
-            net_connect.disconnect()
-
-
 
 def main():
+   initlists()
    COMMANDSTRING = raw_input("\nEnter command to run: \n> ")
    if COMMANDSTRING != "":
       COMMANDLIST.append(COMMANDSTRING)
@@ -57,17 +48,38 @@ def main():
       COMMANDTARGET = raw_input("\nEnter target device ip: \n> ")
       TARGETDEVICES.append(COMMANDTARGET)
       print "you selected %s" % TARGETDEVICES
+      for device in TARGETDEVICES:
+         if device in ipaddr:
+            print "found device, starting command push on %s" % device
+#           netcon(username, password, COMPANY, COMMANDLIST
+            break
+         else:
+            print "could not find device %s" % device
+            break
 
-      with open("company.csv", mode='r') as csvfile:
-         reader = csv.DictReader(csvfile)
-         if TARGETDEVICES in reader:
-            print "found device, applying config to %s" % TARGETDEVICES
-#            netcon(username, password, COMPANY, COMMANDLIST)
-            ENDTIME = datetime.now()
-            print("\nTotal time for script: \n" + str(TOTALTIME))
 main()
 
 
+
+
+
+
+
+
+
+
+
+##################EXTRAS
+
+#            net_connect = ConnectHandler(device)
+#            net_connect.enable()
+#            net_connect.send_config_set(COMMANDLIST)
+#            connect_return = net_connect.send_config_set(COMMANDLIST)
+#
+#            print("\n\n>>>>>>>>> Device {0} {1} <<<<<<<<<".format(hostname, ipaddr))
+#            print(connect_return)
+#            print("\n>>>>>>>>> End <<<<<<<<<")
+#            net_connect.disconnect()
 
 
 
@@ -75,9 +87,6 @@ main()
 pip install netmiko tinydb pyperclip getpass
 
 """
-
-
-
 
 
 """
