@@ -34,8 +34,7 @@ def netcon(username, password, secret, CUSTOMER, COMMANDLIST):
 
             net_connect = ConnectHandler(**switch)
             net_connect.enable()
-
-            # net_connect.send_config_set(username cisco priv 15 pass cisco)
+            net_connect.send_config_set(COMMANDLIST)
             connect_return = net_connect.send_config_set(COMMANDLIST)
 
             print("\n\n>>>>>>>>> Device {0} {1} <<<<<<<<<".format(hostname, ipaddr))
@@ -44,41 +43,32 @@ def netcon(username, password, secret, CUSTOMER, COMMANDLIST):
             net_connect.disconnect()
 
 
-# Grab the Customer name to search
-CUSTOMER = input('Customer name: ') + ".csv"
-username, password, secret = credentials.cred_csv()
-
-# Just for testing
-#COMMANDSTRING = input('Command string to run: ')
 COMMANDLIST = []
-command = input("Input one command per line, end with an extra newline: ")
-while command is not "":
-    COMMANDLIST.append(command)
-    command = input("Input one command per line, end with an extra newline: ")
+
+def main():
+   COMMANDSTRING = input('Enter command to run: ')
+   while COMMANDSTRING is not "":
+      COMMANDLIST.append(command)
+      print "you entered %s" % COMMANDLIST
+      COMMANDTARGET = input('Enter target device ip : ')
+      print "you selected %s" % COMMANDTARGET
+      with open(CUSTOMER, mode='r') as csvfile:
+         reader = csv.DictReader(csvfile)
+         if COMMANDTARGET in reader:
+            print "found device, applying config"
+            netcon(username, password, secret, CUSTOMER, COMMANDLIST)
+            ENDTIME = datetime.now()
+            print("\nTotal time for script: \n" + str(TOTALTIME))
 
 
-# Run the primary function in this program
-netcon(username, password, secret, CUSTOMER, COMMANDLIST)
-ENDTIME = datetime.now()
 
-# How long did it run?
 TOTALTIME = ENDTIME - STARTTIME
-print("\nTotal time for script: \n" + str(TOTALTIME))
 
 
 
 
 """
 pip install netmiko tinydb pyperclip getpass
-
-For database support (WIP):
-pip install tinydb
-
-For the email formatter (connectwise):
-pip install pyperclip
-
-For secure credential access (req'd soon):
-pip install getpass
 
 """
 
