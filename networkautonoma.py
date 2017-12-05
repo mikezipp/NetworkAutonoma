@@ -203,38 +203,7 @@ usermenu()
 
 
 
+#REQUIREMENTS
+#pip install netmiko tinydb pyperclip getpass
 
 
-
-##################EXTRAS
-
-#            net_connect = ConnectHandler(device)
-#            net_connect.enable()
-#            net_connect.send_config_set(COMMANDLIST)
-#            connect_return = net_connect.send_config_set(COMMANDLIST)
-#
-#            print("\n\n>>>>>>>>> Device {0} {1} <<<<<<<<<".format(hostname, ipaddr))
-#            print(connect_return)
-#            print("\n>>>>>>>>> End <<<<<<<<<")
-#            net_connect.disconnect()
-
-
-
-"""
-pip install netmiko tinydb pyperclip getpass
-
-"""
-
-
-"""
-MZ TEST
-
-def show_version():
-   net_connect = ConnectHandler(**router)
-   output = net_connect.send_command('show version')
-   output = output.split('\n')
-   print output
-
-show_version()
-
-"""
