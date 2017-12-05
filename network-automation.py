@@ -1,3 +1,4 @@
+
 """
 This module is a base for single-thread scripts.
 based on https://github.com/admiralspark/NetSpark-Scripts
@@ -14,7 +15,6 @@ STARTTIME = datetime.now()
 ENDTIME = datetime.now()
 TOTALTIME = ENDTIME - STARTTIME
 
-COMMANDLIST = []
 TARGETDEVICES = []
 hostname = []
 device_type = []
@@ -23,15 +23,12 @@ username = []
 password = []
 secret = []
 device = {}
-
-
-
-
-
-#INITIALIZE LISTS#
-
 ipaddr_list = []
 
+
+COMMANDLIST = []
+
+#INITIALIZE LISTS#
 def initlists():
    with open("company.csv", mode='r') as csvfile:
       reader = csv.DictReader(csvfile)
@@ -41,50 +38,63 @@ def initlists():
 initlists()
 
 
+#ADD COMMANDS#
+def commandlist():
+   command = raw_input("Input one command per line, end with an extra newline: ")
+   while command is not "":
+      COMMANDLIST.append(command)
+      command = raw_input("Input one command per line, end with an extra newline: ")
+   print COMMANDLIST
 
 
+#APPLY CONFIG TO A SINGLE DEVICE#
 def userselect1():
    with open("company.csv", mode='r') as csvfile:
       reader = csv.DictReader(csvfile)
-
       count = 0
       for x in ipaddr_list:
-         count = count + 1
-         print "%s : %s" % (count, x)
-
+         print "%s" % (x)
       SELECT_DEVICE = raw_input("enter ip of device you would like to configure\n>")
-      if SELECT_DEVICE in ipaddr_list:
-         print "Found device %s in list" % (SELECT_DEVICE)
+      commandlist()
+
+      for row in reader:
+         if SELECT_DEVICE == row['IP_Address']:
+            print "Found device %s. Gathering details..." % (SELECT_DEVICE)
+            hostname = row['SysName']
+            device_type = row['device_type']
+            ipaddr = row['IP_Address']
+            username = row['username']
+            password = row['password']
+            secret = row['secret']
+            device = {
+               'device_type': device_type,
+               'ip': ipaddr,
+               'username': username,
+               'password': password,
+               'secret': secret,
+               'verbose': False,
+         }
+            COMMIT_CONFIRM = raw_input("\n\n###\nHOSTNAME: %s\nDEVICE:%s\nCOMMAND(S):%s\n###\nType YES to confirm, NO to abort\n>>>" % (hostname, device, COMMANDLIST))
+            if COMMIT_CONFIRM == "YES":
+               print "\nsending configuration to hostname: %s" % hostname
+               net_connect = ConnectHandler(**device)
+               net_connect.enable()
+#               net_connect.config_mode()
+               connect_return = net_connect.send_config_set(COMMANDLIST)
+               print "Sent command(s): %s " % (COMMANDLIST)
+               print "\n>>>>>>>>> End <<<<<<<<<"
+               net_connect.disconnect()
+            if COMMIT_CONFIRM == "NO":
+               print "\naborting configuration"
+            else:
+               print "\nInvalid Selection, exiting program"
 
 
 
 
-      for count, row in enumerate(reader):
-         hostname = row['SysName']
-         device_type = row['device_type']
-         ipaddr = row['IP_Address']
-         username = row['username']
-         password = row['password']
-         secret = row['secret']
-         count = count + 1
-         print count, ipaddr
-         device = {
-            'device_type': device_type,
-            'ip': ipaddr,
-            'username': username,
-            'password': password,
-            'secret': secret,
-            'verbose': False,
-      }
-#         if SELECT_DEVICE == 5:
-#            print "%s %s" % (count, row)
 
 
-#ADD FUNCTION TO ALLOW USER TO APPLY CONFIG ONLY TO SPECIFIED DEVICE
-
-
-
-
+#APPLY CONFIG TO ALL DEVICES#
 def userselect2():
    with open("company.csv", mode='r') as csvfile:
       reader = csv.DictReader(csvfile)
@@ -133,6 +143,7 @@ def userselect2():
 
 
 
+#USER SELECTION MENU#
 def usermenu():
    userselect = raw_input ("\n\nWhat would you like to do?\n1 - Run a single command against a single host\n2 - Run a single command against a list of hosts\n4 - Exit program\n\n>")
 
@@ -143,7 +154,6 @@ def usermenu():
    if userselect == "2":
       print "you selected run a single command against a list of hosts"
       userselect2()
-
 
    if userselect == "4":
       print "exiting program"
