@@ -27,14 +27,37 @@ device = {}
 
 
 
-# Iterates through a CSV, forms a dict, runs the command and logics it.
+
+#INITIALIZE LISTS#
+
+ipaddr_list = []
+
+def initlists():
+   with open("company.csv", mode='r') as csvfile:
+      reader = csv.DictReader(csvfile)
+      for row in reader:
+         ipaddr = row['IP_Address']
+         ipaddr_list.append(ipaddr)
+initlists()
+
+
 
 
 def userselect1():
    with open("company.csv", mode='r') as csvfile:
       reader = csv.DictReader(csvfile)
-#      rows = [r for r in reader]
-      count = 1
+
+      count = 0
+      for x in ipaddr_list:
+         count = count + 1
+         print "%s : %s" % (count, x)
+
+      SELECT_DEVICE = raw_input("enter ip of device you would like to configure\n>")
+      if SELECT_DEVICE in ipaddr_list:
+         print "Found device %s in list" % (SELECT_DEVICE)
+
+
+
 
       for count, row in enumerate(reader):
          hostname = row['SysName']
@@ -44,6 +67,7 @@ def userselect1():
          password = row['password']
          secret = row['secret']
          count = count + 1
+         print count, ipaddr
          device = {
             'device_type': device_type,
             'ip': ipaddr,
@@ -52,7 +76,9 @@ def userselect1():
             'secret': secret,
             'verbose': False,
       }
-         print count, device
+#         if SELECT_DEVICE == 5:
+#            print "%s %s" % (count, row)
+
 
 #ADD FUNCTION TO ALLOW USER TO APPLY CONFIG ONLY TO SPECIFIED DEVICE
 
