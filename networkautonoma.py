@@ -8,7 +8,8 @@ sudo python -m pip install netmiko <- TO INSTALL NETMIKO
 from datetime import datetime
 import csv
 from netmiko import ConnectHandler
-
+from netmiko.ssh_exception import NetMikoTimeoutException
+from netmiko.ssh_exception import NetMikoAuthenticationException
 
 
 TARGETDEVICES = []
@@ -140,25 +141,37 @@ def userselect2():
             if COMMIT_CONFIRM == "YES":
                print "\nsending configuration to hostname: %s" % hostname
                start_time = datetime.now()
-               net_connect = ConnectHandler(**device)
+
+               try:
+                  net_connect = ConnectHandler(**device)
                
-               #BASELINE TEST
-               base_commands = net_connect.send_command('show ver')
-               print base_commands
+                  #BASELINE TEST
+                  base_commands = net_connect.send_command('show ver')
+                  print base_commands
 
-               #ENTER ENABLE MODE
-               net_connect.enable()
+                  #ENTER ENABLE MODE
+                  net_connect.enable()
 
-               #EXECUTE CHANGES (IN CONFIG MODE)
-               config_commands = net_connect.send_config_set(COMMANDLIST)
-               print config_commands
-               print "\n>>>>>>>>> End <<<<<<<<<"
-               net_connect.disconnect()
+                  #EXECUTE CHANGES (IN CONFIG MODE)
+                  config_commands = net_connect.send_config_set(COMMANDLIST)
+                  print config_commands
+                  print "\n>>>>>>>>> End <<<<<<<<<"
+                  net_connect.disconnect()
+
+               except NetMikoTimeoutException:
+                  Msg = 'SSH connection failed'
+                  print 'SSH connection failed for %s' % (hostname)
+
+               except NetMikoAuthenticationException:
+                  Msg = 'SSH authentication failed'
+                  print 'SSH connection failed for %s' % (hostname)
+
                end_time = datetime.now()
                total_time = end_time - start_time
                print "Time elapsed: %s" % str(total_time)
+               continue
 
-            if COMMIT_CONFIRM == "NO":
+            elif COMMIT_CONFIRM == "NO":
                print "\naborting configuration"
                break
             else:
