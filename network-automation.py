@@ -10,10 +10,6 @@ import csv
 from netmiko import ConnectHandler
 
 
-# Begin timing the script
-STARTTIME = datetime.now()
-ENDTIME = datetime.now()
-TOTALTIME = ENDTIME - STARTTIME
 
 TARGETDEVICES = []
 hostname = []
@@ -23,19 +19,22 @@ username = []
 password = []
 secret = []
 device = {}
-ipaddr_list = []
 
 
 COMMANDLIST = []
-totaltime = endtime - starttime
 
 #INITIALIZE LISTS#
+ipaddr_list = []
+device_type_list = []
 def initlists():
    with open("company.csv", mode='r') as csvfile:
       reader = csv.DictReader(csvfile)
       for row in reader:
          ipaddr = row['IP_Address']
          ipaddr_list.append(ipaddr)
+         device_type = row['device_type']
+         if device_type not in device_type_list:
+            device_type_list.append(device_type)
 initlists()
 
 
@@ -52,7 +51,7 @@ def commandlist():
 def userselect1():
    with open("company.csv", mode='r') as csvfile:
       reader = csv.DictReader(csvfile)
-      count = 0
+#      count = 0
       for x in ipaddr_list:
          print "%s" % (x)
       SELECT_DEVICE = raw_input("enter ip of device you would like to configure\n>")
@@ -74,7 +73,7 @@ def userselect1():
                'secret': secret,
                'verbose': False,
          }
-            COMMIT_CONFIRM = raw_input("\n\n###\nHOSTNAME: %s\nDEVICE:%s\nCOMMAND(S):%s\n###\nType YES to confirm, NO to abort\n>>>" % (hostname, device, COMMANDLIST))
+            COMMIT_CONFIRM = raw_input("\n\n###\nHOSTNAME: %s\nCOMMAND(S):%s\n###\nType YES to confirm, NO to abort\n>>>" % (hostname, COMMANDLIST))
             if COMMIT_CONFIRM == "YES":
                print "\nsending configuration to hostname: %s" % hostname
                start_time = datetime.now()
@@ -93,7 +92,8 @@ def userselect1():
                print "\n>>>>>>>>> End <<<<<<<<<"
                net_connect.disconnect()
                end_time = datetime.now()
-               print (\n"Time elapsed: " + srt(totaltime))
+               total_time = end_time - start_time
+               print "Time elapsed: %s" % str(total_time)
 
             if COMMIT_CONFIRM == "NO":
                print "\naborting configuration"
@@ -105,50 +105,61 @@ def userselect1():
 
 
 
-#APPLY CONFIG TO ALL DEVICES#
+#APPLY CONFIG TO A GROUP OF DEVICES # IN PROGRESS#
 def userselect2():
    with open("company.csv", mode='r') as csvfile:
       reader = csv.DictReader(csvfile)
+      for x in device_type_list:
+         print "%s" % (x)
+      SELECT_DEVICE_TYPE = raw_input("enter type of device you would like to configure\n>")
+      commandlist()
+
       for row in reader:
-         hostname = row['SysName']
-         device_type = row['device_type']
-         ipaddr = row['IP_Address']
-         username = row['username']
-         password = row['password']
-         secret = row['secret']
-         device = {
-            'device_type': device_type,
-            'ip': ipaddr,
-            'username': username,
-            'password': password,
-            'secret': secret,
-            'verbose': False,
-      }
+         if SELECT_DEVICE_TYPE == row['device_type']:
+            print "Found device %s. Gathering details..." % (SELECT_DEVICE_TYPE)
 
-         COMMAND = raw_input ("enter command would you like to run\n>")
-         print "You entered \n\n%s\n\nIf this looks correct, enter YES. enter NO to abort" % COMMAND
-         COMMANDCONFIRM = raw_input ("\n>")
-         if COMMANDCONFIRM == "YES":
-            print "Sending config:\n\n%s\n\non %s with the following credentials:\nusername: %s\npassword: %s" % (COMMAND, ipaddr, username, password)
-#           net_connect = ConnectHandler(**device)
-#           showcommand = net_connect.send_command_expect("show system uptime")
-#           print("\n\n>>>>>>>>> Device {0} <<<<<<<<<\n".format(row['SysName']))
-#           configcommand = "do show system uptime "
-#           exitcommand = "exit"
-            break
-         elif COMMANDCONFIRM == "NO":
-            print "you selected NO. Exiting program"
-            break
+            hostname = row['SysName']
+            device_type = row['device_type']
+            ipaddr = row['IP_Address']
+            username = row['username']
+            password = row['password']
+            secret = row['secret']
+            device = {
+               'device_type': device_type,
+               'ip': ipaddr,
+               'username': username,
+               'password': password,
+               'secret': secret,
+               'verbose': False,
+         }
 
-#         if iphost == "":
-#            net_connect.config_mode()
-#            net_connect.send_command_expect(showcommand)
-#            print "Sent command %s to %s " % (showcommand, ipaddr)
-#            net_connect.send_command_expect(configcommand)
-#            print "Sent command %s to %s " % (configcommand, ipaddr)
-#            print "Memory Saved."
-#            print "\n>>>>>>>>> End <<<<<<<<<"
-#            net_connect.disconnect()
+            COMMIT_CONFIRM = raw_input("\n\n###\nHOSTNAME: %s\nCOMMAND(S):%s\n###\nType YES to confirm, NO to abort\n>>>" % (hostname, COMMANDLIST))
+            if COMMIT_CONFIRM == "YES":
+               print "\nsending configuration to hostname: %s" % hostname
+               start_time = datetime.now()
+               net_connect = ConnectHandler(**device)
+               
+               #BASELINE TEST
+               base_commands = net_connect.send_command('show ver')
+               print base_commands
+
+               #ENTER ENABLE MODE
+               net_connect.enable()
+
+               #EXECUTE CHANGES (IN CONFIG MODE)
+               config_commands = net_connect.send_config_set(COMMANDLIST)
+               print config_commands
+               print "\n>>>>>>>>> End <<<<<<<<<"
+               net_connect.disconnect()
+               end_time = datetime.now()
+               total_time = end_time - start_time
+               print "Time elapsed: %s" % str(total_time)
+
+            if COMMIT_CONFIRM == "NO":
+               print "\naborting configuration"
+            else:
+               print "\nInvalid Selection, exiting program"
+
 
 
 
@@ -156,14 +167,14 @@ def userselect2():
 
 #USER SELECTION MENU#
 def usermenu():
-   userselect = raw_input ("\n\nWhat would you like to do?\n1 - Run a single command against a single host\n2 - Run a single command against a list of hosts\n4 - Exit program\n\n>")
+   userselect = raw_input ("\n\nWhat would you like to do?\n1 - Run command(s) to a single host\n2 - Run command(s) to a type of hosts\n4 - Exit program\n\n>")
 
    if userselect == "1":
-      print "you selected run a single command against a single host"
+      print "Running command(s) against a single host"
       userselect1()
 
    if userselect == "2":
-      print "you selected run a single command against a list of hosts"
+      print "Running command(s) against a type of hosts"
       userselect2()
 
    if userselect == "4":
