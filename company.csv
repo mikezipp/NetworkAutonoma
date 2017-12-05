@@ -1,6 +1,6 @@
 IP_Address,SysName,device_type,authentication,username,password,secret
-10.30.62.2,none,cisco_ios,LOCAL,cisco,password,enablepassword
-10.30.62.3,none,cisco_ios,LOCAL,cisco,password,enablepassword
+10.30.62.2,SF1-CER-CORE01,cisco_ios,LOCAL,cisco,password,enablepassword
+10.30.62.3,SF1-CER-CORE02,cisco_ios,LOCAL,cisco,password,enablepassword
 10.30.62.10,none,cisco_ios,LOCAL,cisco,password,enablepassword
 10.30.62.11,none,cisco_ios,LOCAL,cisco,password,enablepassword
 10.30.62.12,none,cisco_ios,LOCAL,cisco,password,enablepassword
