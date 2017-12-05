@@ -47,14 +47,15 @@ def commandlist():
    print COMMANDLIST
 
 
-#APPLY CONFIG TO A SINGLE DEVICE#
+#APPLY CONFIG BY IP ADDRESS
 def userselect1():
    with open("company.csv", mode='r') as csvfile:
       reader = csv.DictReader(csvfile)
-#      count = 0
+      print "\n####################\nDISPLAYING ALL HOSTS:\n####################\n"
       for x in ipaddr_list:
-         print "%s" % (x)
-      SELECT_DEVICE = raw_input("enter ip of device you would like to configure\n>")
+         print x
+      print "\n####################\n"
+      SELECT_DEVICE = raw_input("\nEnter IP of device you would like to configure\n>")
       commandlist()
       for row in reader:
          if SELECT_DEVICE == row['IP_Address']:
@@ -73,7 +74,7 @@ def userselect1():
                'secret': secret,
                'verbose': False,
          }
-            COMMIT_CONFIRM = raw_input("\n\n###\nHOSTNAME: %s\nCOMMAND(S):%s\n###\nType YES to confirm, NO to abort\n>>>" % (hostname, COMMANDLIST))
+            COMMIT_CONFIRM = raw_input("\n\n##########\nHOSTNAME: %s\nCOMMAND(S):%s\n##########\nType YES to confirm, NO to abort\n>>>" % (hostname, COMMANDLIST))
             if COMMIT_CONFIRM == "YES":
                print "\nsending configuration to hostname: %s" % hostname
                start_time = datetime.now()
@@ -105,12 +106,14 @@ def userselect1():
 
 
 
-#APPLY CONFIG TO A GROUP OF DEVICES # IN PROGRESS#
+#APPLY CONFIG BY DEVICE TYPE
 def userselect2():
    with open("company.csv", mode='r') as csvfile:
       reader = csv.DictReader(csvfile)
+      print "\n###########################\nDISPLAYING ALL DEVICE TYPES:\n###########################\n"
       for x in device_type_list:
-         print "%s" % (x)
+         print x
+      print "\n####################\n"
       SELECT_DEVICE_TYPE = raw_input("enter type of device you would like to configure\n>")
       commandlist()
 
@@ -133,7 +136,7 @@ def userselect2():
                'verbose': False,
          }
 
-            COMMIT_CONFIRM = raw_input("\n\n###\nHOSTNAME: %s\nCOMMAND(S):%s\n###\nType YES to confirm, NO to abort\n>>>" % (hostname, COMMANDLIST))
+            COMMIT_CONFIRM = raw_input("\n\n##########\nHOSTNAME: %s\nCOMMAND(S):%s\n##########\nType YES to confirm, NO to abort\n>>>" % (hostname, COMMANDLIST))
             if COMMIT_CONFIRM == "YES":
                print "\nsending configuration to hostname: %s" % hostname
                start_time = datetime.now()
@@ -157,9 +160,10 @@ def userselect2():
 
             if COMMIT_CONFIRM == "NO":
                print "\naborting configuration"
+               break
             else:
                print "\nInvalid Selection, exiting program"
-
+               break
 
 
 
