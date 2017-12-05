@@ -27,6 +27,7 @@ ipaddr_list = []
 
 
 COMMANDLIST = []
+totaltime = endtime - starttime
 
 #INITIALIZE LISTS#
 def initlists():
@@ -56,7 +57,6 @@ def userselect1():
          print "%s" % (x)
       SELECT_DEVICE = raw_input("enter ip of device you would like to configure\n>")
       commandlist()
-
       for row in reader:
          if SELECT_DEVICE == row['IP_Address']:
             print "Found device %s. Gathering details..." % (SELECT_DEVICE)
@@ -77,13 +77,24 @@ def userselect1():
             COMMIT_CONFIRM = raw_input("\n\n###\nHOSTNAME: %s\nDEVICE:%s\nCOMMAND(S):%s\n###\nType YES to confirm, NO to abort\n>>>" % (hostname, device, COMMANDLIST))
             if COMMIT_CONFIRM == "YES":
                print "\nsending configuration to hostname: %s" % hostname
+               start_time = datetime.now()
                net_connect = ConnectHandler(**device)
+
+               #BASELINE TEST
+               base_commands = net_connect.send_command('show ver')
+               print base_commands
+
+               #ENTER ENABLE MODE
                net_connect.enable()
-#               net_connect.config_mode()
-               connect_return = net_connect.send_config_set(COMMANDLIST)
-               print "Sent command(s): %s " % (COMMANDLIST)
+
+               #EXECUTE CHANGES (IN CONFIG MODE)
+               config_commands = net_connect.send_config_set(COMMANDLIST)
+               print config_commands
                print "\n>>>>>>>>> End <<<<<<<<<"
                net_connect.disconnect()
+               end_time = datetime.now()
+               print (\n"Time elapsed: " + srt(totaltime))
+
             if COMMIT_CONFIRM == "NO":
                print "\naborting configuration"
             else:
