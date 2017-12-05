@@ -33,3 +33,11 @@ IP_Address,SysName,device_type,authentication,username,password,secret
 172.16.100.18,CORP1-CER-ILO01,cisco_ios,LOCAL,cisco,password,enablepassword
 172.16.100.21,CORP1-SHOP-ASW01,cisco_ios,LOCAL,cisco,password,enablepassword
 172.16.100.26,CORP1-DC383-C-ASW01,cisco_ios,LOCAL,cisco,password,enablepassword
+172.16.100.27,SF1-CER624-ILO01,cisco_ios,LOCAL,cisco,password,enablepassword
+172.16.100.28,SF1-CER601-ILO01,cisco_ios,LOCAL,cisco,password,enablepassword
+172.16.100.31,SF1-BITS-SAS01,cisco_ios,LOCAL,cisco,password,enablepassword
+172.16.100.32,SF1-CER723-ILO01,cisco_ios,LOCAL,cisco,password,enablepassword
+172.16.100.33,SF1-BITS-SAS02,cisco_ios,LOCAL,cisco,password,enablepassword
+172.16.100.34,SF1-BITS-SAS03,cisco_ios,LOCAL,cisco,password,enablepassword
+172.16.100.35,SF1-SHOP-SAS01,cisco_ios,LOCAL,cisco,password,enablepassword
+10.40.98.1,SF-AMAZON-01,cisco_ios,LOCAL,cisco,password,enablepassword
