@@ -1,3 +1,8 @@
+Welcome to NetworkAutonoma!
+Use this program to perform batch configuration changes to your Cisco network equipment.
+
+Getting started:
+
 1 - Install files:
     pip install netmiko tinydb pyperclip getpass
 
