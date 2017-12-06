@@ -6,7 +6,7 @@ Getting started:
 1 - Install files:
     pip install netmiko tinydb pyperclip getpass
 
-2 - Modify .csv to desired settings
+2 - Modify .csv to add all equipment & logins that you need
 
 3 - "python networkautonoma.py" to launch
 
