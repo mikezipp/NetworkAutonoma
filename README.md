@@ -8,6 +8,8 @@ Getting started:
 
 2 - Modify .csv to add all equipment & logins that you need
 
-3 - "python networkautonoma.py" to launch
+3 - Modify function: TEE_TO_SPECIFIED_FILE and replace USERNAME with local path
+
+4 - "python networkautonoma.py" to launch
 
 Enjoy!

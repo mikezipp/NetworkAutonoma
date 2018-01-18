@@ -415,10 +415,10 @@ def TEE_TO_SPECIFIED_FILE(destination, command, output, device_type):
    curpath = os.path.abspath(os.curdir)
    print "Your current directory path is: %s" % (curpath)
    if device_type == "cisco_ios":
-      save_path = '/Users/mzipp/P12NetworkAutonoma/config_backups/cisco_ios/'
+      save_path = '/Users/USERNAME/NetworkAutonoma/config_backups/cisco_ios/'
       completename = os.path.join(save_path, destfilename+".txt")
    if device_type == "juniper":
-      save_path = '/Users/mzipp/P12NetworkAutonoma/config_backups/juniper/'
+      save_path = '/Users/USERNAME/NetworkAutonoma/config_backups/juniper/'
       completename = os.path.join(save_path, destfilename+".txt")
    print "Saving output to %s" % (completename)
    header = "##########START##########\nTARGET: %s\nCOMMAND: %s\nOUTPUT:\n%s" % (destination, command, output)
